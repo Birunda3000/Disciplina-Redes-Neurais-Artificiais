@@ -27,7 +27,7 @@ labels_array = np.array(labels)
 
 # Parameters
 N = 0.001
-EPOCHS = 5
+EPOCHS = 100
 cost = []
 
 # Network architecture
@@ -43,7 +43,12 @@ b_output = np.random.uniform(size=(1, output_neurons))
 # mu and sigma
 mu = ut.get_kmeans_centers_for_rbf(df=features, n_clusters=hidden_neurons)
 
-sigma = #COMPLETE
+dists = np.zeros((features_array.shape[0], hidden_neurons))
+for i in range(hidden_neurons):
+    dists[:, i] = np.linalg.norm(features_array - mu[i], axis=1)
+sigma = np.median(dists) / np.sqrt(2 * hidden_neurons)
+
+sigma = np.ones((hidden_neurons))
 
 # Training
 for epoch in tqdm(range(EPOCHS)):
@@ -56,11 +61,11 @@ for epoch in tqdm(range(EPOCHS)):
     delta_output_w = (labels_array - activation_output) * ut.sigmoid_derivative(
         activation_output
     )
-    delta_output_b = #COMPLETE
+    delta_output_b = delta_output_w.sum(axis=0, keepdims=True)
 
     # Update weights
     w_output += N * activation_hidden.T.dot(delta_output_w)
-    b_output += #COMPLETE
+    b_output += N * delta_output_b
 
 # Plot
 print("Custo final: {}".format(cost[-1]))

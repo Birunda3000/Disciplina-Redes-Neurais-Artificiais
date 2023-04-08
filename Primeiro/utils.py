@@ -74,7 +74,6 @@ def gaussian_1(x, mu, sigma):
     sigma = np.array(sigma) 
     for sample in x:
         output.append( np.exp( -( np.linalg.norm(sample - mu) )**2 / (2 * sigma**2) ) )
-    print('output ', np.array(output).shape)
     return np.array(output) 
 
 def gaussian(x, mu, sigma):
@@ -82,8 +81,6 @@ def gaussian(x, mu, sigma):
     for neuron in range(len(mu)):
         output.append( gaussian_1(x=x, mu=mu[neuron], sigma=sigma[neuron]) )
     return np.array(output).T 
-        
-
 
 
 def gaussian_derivative_x(x, mu, sigma):
