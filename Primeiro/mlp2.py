@@ -15,7 +15,7 @@ df.insert(0, "Bias", 1)
 display(df.head())
 
 # selecione as colunas de recursos
-features = df[["Bias","SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]]
+features = df[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]]
 # transforme em um array numpy
 features_array = np.array(features)
 
@@ -46,6 +46,7 @@ w_output = np.random.uniform(size=(hidden_neurons, output_neurons))
 for i in tqdm(range(EPOCHS)):
     # Feedforward
     activation_hidden_1 = ut.sigmoid(np.dot(features_array, w_hidden_1))
+    print(activation_hidden_1.shape)
     activation_output = ut.sigmoid(np.dot(activation_hidden_1, w_output))
     cost.append(ut.classification_error(y_true=labels_array, y_pred=activation_output))
 
@@ -60,6 +61,7 @@ for i in tqdm(range(EPOCHS)):
     # Atualize os pesos
     w_output += np.dot(activation_hidden_1.T, delta_output) * N
     w_hidden_1 += np.dot(features_array.T, delta_hidden_1) * N
+    break
 
 # Plot
 print("Custo final: {}".format(cost[-1]))

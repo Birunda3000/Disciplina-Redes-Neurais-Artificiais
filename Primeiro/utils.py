@@ -1,6 +1,7 @@
 from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
 import numpy as np
+from sklearn.cluster import KMeans
 
 
 def fn_cat_onehot(df):
@@ -66,12 +67,59 @@ def calc_accuracy(true_labels, pred_labels):
     incorrect = len(true_labels) - correct
     return correct, incorrect
 
+def gaussian_1(x, mu, sigma):
+    output = []
+    x = np.array(x)
+    mu = np.array(mu)
+    sigma = np.array(sigma) 
+    for sample in x:
+        output.append( np.exp( -( np.linalg.norm(sample - mu) )**2 / (2 * sigma**2) ) )
+    print('output ', np.array(output).shape)
+    return np.array(output) 
+
 def gaussian(x, mu, sigma):
-    """Gaussian function with mean mu and standard deviation sigma"""
-    return np.exp(-(x - mu)**2 / (2 * sigma**2))
+    output = []
+    for neuron in range(len(mu)):
+        output.append( gaussian_1(x=x, mu=mu[neuron], sigma=sigma[neuron]) )
+    return np.array(output).T 
+        
+
+
+
 def gaussian_derivative_x(x, mu, sigma):
     return -np.exp(-(x - mu)**2 / (2 * sigma**2)) * (x - mu) / sigma**2
 def gaussian_derivative_mu(x, mu, sigma):
     return np.exp(-(x - mu)**2 / (2 * sigma**2)) * (x - mu) / sigma**2
 def gaussian_derivative_sigma(x, mu, sigma):
     return np.exp(-(x - mu)**2 / (2 * sigma**2)) * (x - mu)**2 / sigma**3
+
+def get_kmeans_centers_for_rbf(df, n_clusters):
+    # Initialize a KMeans model with the desired number of clusters
+    kmeans = KMeans(n_clusters=n_clusters)
+    
+    # Fit the model to the data
+    kmeans.fit(df)
+    
+    # Return the centers of each cluster as a numpy array
+    return kmeans.cluster_centers_
+
+
+'''def get_closest_center(features, centers):
+    distances = np.sqrt(np.sum((features[:, np.newaxis, :] - centers) ** 2, axis=2))
+    return np.argmin(distances, axis=1)
+
+
+# calculate the average distance between each center and all data points in that cluster
+def calculate_average_distance(center, cluster):
+    distances = np.linalg.norm(center - cluster, axis=1)
+    return np.mean(distances)
+
+# calculate initial sigma for each cluster
+def calculate_initial_sigma(features, centers):
+    sigmas = []
+    for i in range(len(centers)):
+        cluster = features[np.argwhere(get_closest_center(features, centers) == i)[:, 0]]
+        sigma_i = calculate_average_distance(centers[i], cluster)
+        sigmas.append(sigma_i)
+    return np.array(sigmas)'''
+
