@@ -11,9 +11,11 @@ from tqdm import tqdm
 path = os.path.join(os.path.dirname(__file__), "..", "_DATA_", "Iris.csv")
 df = pd.read_csv(path)
 df = ut.fn_cat_onehot(df)
+df.insert(0, "Bias", 1)
+display(df.head())
 
 # selecione as colunas de recursos
-features = df[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]]
+features = df[["Bias","SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]]
 # transforme em um array numpy
 features_array = np.array(features)
 
@@ -25,7 +27,7 @@ labels = df[
 labels_array = np.array(labels)
 
 # Parametros
-N = 0.01
+N = 0.001
 momentum = 0.5
 EPOCHS = 5000
 cost = []
@@ -40,15 +42,11 @@ output_neurons = labels_array.shape[1]  # 3
 w_hidden_1 = np.random.uniform(size=(input_neurons, hidden_neurons))
 w_output = np.random.uniform(size=(hidden_neurons, output_neurons))
 
-# Bias
-b_hidden_1 = np.random.uniform(size=(1, hidden_neurons))
-b_output = np.random.uniform(size=(1, output_neurons))
-
 # Treinamento
 for i in tqdm(range(EPOCHS)):
     # Feedforward
-    activation_hidden_1 = ut.sigmoid(np.dot(features_array, w_hidden_1) + b_hidden_1)
-    activation_output = ut.sigmoid(np.dot(activation_hidden_1, w_output) + b_output)
+    activation_hidden_1 = ut.sigmoid(np.dot(features_array, w_hidden_1))
+    activation_output = ut.sigmoid(np.dot(activation_hidden_1, w_output))
     cost.append(ut.classification_error(y_true=labels_array, y_pred=activation_output))
 
     # Backpropagation
@@ -62,10 +60,6 @@ for i in tqdm(range(EPOCHS)):
     # Atualize os pesos
     w_output += np.dot(activation_hidden_1.T, delta_output) * N
     w_hidden_1 += np.dot(features_array.T, delta_hidden_1) * N
-
-    # Atualize o bias
-    b_output += np.sum(delta_output, axis=0, keepdims=True) * N
-    b_hidden_1 += np.sum(delta_hidden_1, axis=0, keepdims=True) * N
 
 # Plot
 print("Custo final: {}".format(cost[-1]))
