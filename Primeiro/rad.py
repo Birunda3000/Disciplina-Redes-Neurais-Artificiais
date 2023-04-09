@@ -24,12 +24,12 @@ labels_array = np.array(labels)
 
 # Split data into train and test sets with equal proportion of each class
 X_train, X_test, y_train, y_test = train_test_split(
-    features_array, labels_array, test_size=0.4, stratify=labels_array
+    features_array, labels_array, test_size=0.4, stratify=labels_array, random_state=42, shuffle=True
 )
 
 # Parameters
 N = 0.001
-EPOCHS = 10000
+EPOCHS = 100000
 cost = []
 
 # Network architecture
@@ -97,3 +97,9 @@ y_pred = np.argmax(activation_output_train, axis=1)
 
 print("Classification report train:")
 ut.get_classification_metrics(y_true=y_true, y_pred=y_pred)
+
+plt.plot(cost)
+plt.xlabel("Epochs")
+plt.ylabel("Cost")
+plt.grid()
+plt.show()
