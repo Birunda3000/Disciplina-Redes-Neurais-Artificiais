@@ -27,7 +27,7 @@ labels_array = np.array(labels)
 
 # Parameters
 N = 0.001
-EPOCHS = 100
+EPOCHS = 1000
 cost = []
 
 # Network architecture
@@ -41,14 +41,8 @@ w_output = np.random.uniform(size=(hidden_neurons, output_neurons))
 b_output = np.random.uniform(size=(1, output_neurons))
 
 # mu and sigma
-mu = ut.get_kmeans_centers_for_rbf(df=features, n_clusters=hidden_neurons)
-
-dists = np.zeros((features_array.shape[0], hidden_neurons))
-for i in range(hidden_neurons):
-    dists[:, i] = np.linalg.norm(features_array - mu[i], axis=1)
-sigma = np.median(dists) / np.sqrt(2 * hidden_neurons)
-
-sigma = np.ones((hidden_neurons))
+mu, sigma = ut.get_kmeans_centers_for_rbf(df=features, n_clusters=hidden_neurons)
+#sigma = np.ones((hidden_neurons))
 
 # Training
 for epoch in tqdm(range(EPOCHS)):
